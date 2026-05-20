@@ -40,21 +40,40 @@ Expand `~` in `state_dir` to the user's home directory. Defaults if absent:
 
 Ensure `state_dir` exists (create it if not).
 
-### 2. Compute `since`
-
-- If `<state_dir>/last-run.json` exists and contains a `last_run_at` ISO
-  timestamp, use that as `since`.
-- Otherwise, set `since` to "now − 24h" and remember that this is a first
-  run so the report can include a one-line note.
-
-Capture the current timestamp as `run_at` *before* making the MCP calls;
-it will be written back to `last-run.json` at the end.
-
-### 3. Resolve board and list IDs
+### 2. Resolve board and list IDs
 
 Invoke the `trello-board-resolver` skill with the board name (argument or
 default) and `roles: ["doing", "done"]`. Abort with the resolver's error
 message if the board can't be found or either role is unresolved.
+
+Capture `board_id` from the resolver output — `since` is keyed per board,
+so the resolution has to happen before we can read the last-run state.
+
+### 3. Compute `since`
+
+The last-run state is **per board** so that running `/daily-summary "A"`
+and `/daily-summary "B"` doesn't mix their windows. Schema of
+`<state_dir>/last-run.json`:
+
+```json
+{
+  "boards": {
+    "<board_id>": {
+      "last_run_at": "2026-05-19T08:00:00Z",
+      "board_name": "Personal Ops"
+    }
+  }
+}
+```
+
+- If `<state_dir>/last-run.json` exists and `boards[<board_id>].last_run_at`
+  is present, use that as `since`.
+- Otherwise (file missing or no entry for this board), set `since` to
+  "now − 24h" and remember that this is a first run *for this board* so
+  the report can include a one-line note.
+
+Capture the current timestamp as `run_at` *before* making the MCP calls;
+it will be written back to `last-run.json` at the end.
 
 ### 4. Fetch four snapshots via `trello-list-snapshot`
 
@@ -96,11 +115,24 @@ _Since last summary at <since>_  (or _First run: showing last 24h_)
 
 ### 6. Persist last-run
 
-Write `<state_dir>/last-run.json`:
+Read-modify-write `<state_dir>/last-run.json`, updating only this board's
+entry and leaving other boards' entries untouched:
 
 ```json
-{ "last_run_at": "<run_at ISO 8601 UTC>", "board": "<board name>" }
+{
+  "boards": {
+    "<board_id>": {
+      "last_run_at": "<run_at ISO 8601 UTC>",
+      "board_name": "<resolved board name>"
+    }
+  }
+}
 ```
+
+If the file does not exist, create it with the `boards` map containing
+just this entry. If it exists but has the old flat shape
+(`{ last_run_at, board }`), discard it and start fresh with the new
+schema — the cost is one extra first-run window, which is acceptable.
 
 Only persist on a successful run (i.e. after the report is rendered). If
 any step before #5 fails, leave the previous `last-run.json` untouched so

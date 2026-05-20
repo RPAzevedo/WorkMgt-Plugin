@@ -1,0 +1,12 @@
+{
+  "trello": {
+    "default_board": "Personal Ops",
+    "lists": {
+      "doing": ["Doing", "In Progress", "WIP"],
+      "done":  ["Done", "Shipped", "Completed"]
+    },
+    "stale_days": 5,
+    "done_head": 10
+  },
+  "state_dir": "~/.claude/work-mgt/state"
+}

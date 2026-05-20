@@ -1,0 +1,9 @@
+{
+  "name": "work-mgt",
+  "description": "Work-management skills and commands for Claude-based executive assistants. Operates against MCP servers the user configures (Trello, calendar, email, etc.).",
+  "version": "0.1.0",
+  "author": { "name": "Rafael Azevedo" },
+  "repository": "https://github.com/RPAzevedo/WorkMgt-Plugin",
+  "license": "MIT",
+  "keywords": ["executive-assistant", "trello", "work-management", "mcp"]
+}

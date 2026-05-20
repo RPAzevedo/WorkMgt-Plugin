@@ -1,0 +1,11 @@
+{
+  "name": "work-mgt",
+  "owner": { "name": "Rafael Azevedo" },
+  "plugins": [
+    {
+      "name": "work-mgt",
+      "source": "./",
+      "description": "Work-management skills and commands for Claude-based executive assistants."
+    }
+  ]
+}

@@ -77,16 +77,17 @@ it will be written back to `last-run.json` at the end.
 
 ### 4. Fetch four snapshots via `trello-list-snapshot`
 
-| # | List  | `since` | Purpose |
-|---|-------|---------|---------|
-| a | Doing | (none)  | Full in-progress snapshot |
-| b | Doing | `since` | Cards active since last summary |
-| c | Done  | (none)  | Full done snapshot (for `done_head` and run-rate) |
-| d | Done  | `since` | Cards completed/touched since last summary |
+| # | List  | `since` | `label`   | `format`   | Purpose |
+|---|-------|---------|-----------|------------|---------|
+| a | Doing | (none)  | `"Doing"` | `detailed` | Full in-progress snapshot |
+| b | Doing | `since` | `"Doing"` | `compact`  | Cards active since last summary |
+| c | Done  | (none)  | `"Done"`  | `compact`  | Full done snapshot (for `done_head` and run-rate) |
+| d | Done  | `since` | `"Done"`  | `detailed` | Cards completed/touched since last summary |
 
 Call the skill four times, passing the same `list_id` with and without
-`since` for each role. Use `format: detailed` for (a) and (d), `compact`
-for (b) and (c).
+`since` for each role. Always pass `label` so the rendered markdown gets
+a meaningful `### Doing (n cards)` / `### Done (n cards)` heading instead
+of the default `"List"`.
 
 ### 5. Render the report
 

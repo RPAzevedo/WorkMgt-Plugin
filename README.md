@@ -20,11 +20,55 @@ Verify with `claude mcp list` — the tool names should appear as
 `mcp__trello__list_boards`, `mcp__trello__list_lists`, and
 `mcp__trello__get_cards`.
 
-## Install (local, while developing)
+## Install
 
-Point Claude Code at this directory as a plugin marketplace and install the
-plugin from it. Once published to GitHub you'll be able to install directly
-from the repo URL.
+The repo ships a `.claude-plugin/marketplace.json`, so the GitHub repo *is*
+the marketplace. Install from inside Claude Code:
+
+```
+/plugin marketplace add RPAzevedo/WorkMgt-Plugin
+/plugin install work-mgt@work-mgt
+```
+
+The first command registers this repo as a marketplace named `work-mgt`;
+the second installs the `work-mgt` plugin from it (the
+`<plugin>@<marketplace>` syntax — both happen to be `work-mgt` here).
+
+Verify with:
+
+```
+/plugin list
+```
+
+You should see `work-mgt@work-mgt` and `/daily-summary` should appear in
+the slash-command list.
+
+### Updating
+
+```
+/plugin marketplace update work-mgt
+/plugin update work-mgt@work-mgt
+```
+
+### Uninstalling
+
+```
+/plugin uninstall work-mgt@work-mgt
+/plugin marketplace remove work-mgt
+```
+
+### Local development install
+
+If you're hacking on the plugin itself, point Claude Code at your checkout
+as a directory-source marketplace instead of the GitHub one:
+
+```
+/plugin marketplace add /path/to/WorkMgt-Plugin
+/plugin install work-mgt@work-mgt
+```
+
+Edits to skill/command files are picked up on the next Claude Code session
+(or after `/plugin marketplace update work-mgt`).
 
 ## Configure
 
